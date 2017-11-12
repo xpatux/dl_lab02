@@ -6,6 +6,10 @@ import math
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 
+import logging
+
+# from AirlinePrediction import logger
+
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, look_back=1):
     dataX, dataY = [], []
@@ -18,6 +22,7 @@ def create_dataset(dataset, look_back=1):
 
 def readAirlineData(history):
     # load the dataset
+    
     dataframe = pandas.read_csv('international-airline-passengers.csv', usecols=[1], engine='python', skipfooter=3)
     dataset = dataframe.values
     dataset = dataset.astype('float32')
@@ -40,6 +45,10 @@ def readAirlineData(history):
 
 
 def displayResult(dataset, trainPredict, trainY, testPredict, testY, scaler, history):
+
+    # create a logger
+    logger = set_logger()
+
     # invert predictions
     trainPredict = scaler.inverse_transform(trainPredict)
     trainY = scaler.inverse_transform([trainY])
@@ -48,9 +57,9 @@ def displayResult(dataset, trainPredict, trainY, testPredict, testY, scaler, his
 
     # calculate root mean squared error
     trainScore = math.sqrt(mean_squared_error(trainY[0], trainPredict[:,0]))
-    print('Train Score: %.2f RMSE' % (trainScore))
+    logger.debug('Train Score: %.2f RMSE' % (trainScore))
     testScore = math.sqrt(mean_squared_error(testY[0], testPredict[:,0]))
-    print('Test Score: %.2f RMSE' % (testScore))
+    logger.debug('Test Score: %.2f RMSE' % (testScore))
 
     # shift train predictions for plotting
     trainPredictPlot = numpy.empty_like(dataset)
@@ -66,4 +75,32 @@ def displayResult(dataset, trainPredict, trainY, testPredict, testY, scaler, his
     plt.plot(scaler.inverse_transform(dataset))
     plt.plot(trainPredictPlot)
     plt.plot(testPredictPlot)
-    plt.show()
+    # plt.show()
+
+    logger.handlers.pop()
+
+def set_logger():
+    # create logger 
+    logger = logging.getLogger(__name__)
+
+    logger.propagate = False
+
+    logger.setLevel(logging.DEBUG)
+
+    # create file handler which logs even debug messages
+    fh = logging.FileHandler('runtime.log')
+    fh.setLevel(logging.DEBUG)
+
+    # create console handler with a higher log level
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    # create formatter and add it to the handlers
+    formatter = logging.Formatter('%(asctime)s:%(name)s:%(levelname)s:%(message)s')
+    fh.setFormatter(formatter)
+    ch.setFormatter(formatter)
+    # add the handlers to the logger
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+
+    return logger
+
