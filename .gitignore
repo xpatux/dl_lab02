@@ -121,3 +121,5 @@ venv.bak/
 .history
 
 # End of https://www.gitignore.io/api/python,jupyternotebook,visualstudiocode
+.ipynb_checkpoints/
+.ipynb_checkpoints/lab02_parte1-checkpoint.ipynb
