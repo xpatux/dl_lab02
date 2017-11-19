@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 
 import logging
 
+logger = logging.getLogger(__name__)
+
 # from AirlinePrediction import logger
 
 # convert an array of values into a dataset matrix
@@ -22,7 +24,6 @@ def create_dataset(dataset, look_back=1):
 
 def readAirlineData(history):
     # load the dataset
-
     dataframe = pandas.read_csv('international-airline-passengers.csv', usecols=[1], engine='python', skipfooter=3)
     dataset = dataframe.values
     dataset = dataset.astype('float32')
@@ -44,10 +45,10 @@ def readAirlineData(history):
     return trainX, trainY, testX, testY, scaler, dataset
 
 
-def displayResult(dataset, trainPredict, trainY, testPredict, testY, scaler, history):
+def displayResult(dataset, trainPredict, trainY, testPredict, testY, scaler, history, filename='default.png'):
 
     # create a logger
-    logger = set_logger()
+    logger.debug('Starting')
 
     # invert predictions
     trainPredict = scaler.inverse_transform(trainPredict)
@@ -75,32 +76,11 @@ def displayResult(dataset, trainPredict, trainY, testPredict, testY, scaler, his
     plt.plot(scaler.inverse_transform(dataset))
     plt.plot(trainPredictPlot)
     plt.plot(testPredictPlot)
-    # plt.show()
+    plt.xlabel('month')
+    plt.ylabel('qty. of passengers')
+    plt.title('Amount of passengers over time')
+    plt.legend(['real','train','test'])
+    plt.savefig('./out/%s.png' % filename, bbox_inches='tight', transparent=False)
+    plt.clf()
 
-    logger.handlers.pop()
-
-def set_logger():
-    # create logger
-    logger = logging.getLogger(__name__)
-
-    logger.propagate = False
-
-    logger.setLevel(logging.DEBUG)
-
-    # create file handler which logs even debug messages
-    fh = logging.FileHandler('runtime.log')
-    fh.setLevel(logging.DEBUG)
-
-    # create console handler with a higher log level
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    # create formatter and add it to the handlers
-    formatter = logging.Formatter('%(asctime)s:%(name)s:%(levelname)s:%(message)s')
-    fh.setFormatter(formatter)
-    ch.setFormatter(formatter)
-    # add the handlers to the logger
-    logger.addHandler(fh)
-    logger.addHandler(ch)
-
-    return logger
-
+    logger.debug('Done.')
