@@ -123,3 +123,6 @@ venv.bak/
 # End of https://www.gitignore.io/api/python,jupyternotebook,visualstudiocode
 .ipynb_checkpoints/
 .ipynb_checkpoints/lab02_parte1-checkpoint.ipynb
+dummy/lab1/
+dummy/redes/
+dummy/
